@@ -1,0 +1,34 @@
+.login-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+    margin-top: 50px;
+
+    .btn {
+        padding: 12px 24px;
+        font-size: 1.2rem;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+
+        &.client {
+            background-color: #50e3c2;
+            color: white;
+
+            &:hover {
+                background-color: #50e3c2;
+            }
+        }
+
+        &.support {
+            background-color: #2196f3;
+            color: white;
+
+            &:hover {
+                background-color: #1e88e5;
+            }
+        }
+    }
+}
