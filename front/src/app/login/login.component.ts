@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -8,4 +10,16 @@ import { CommonModule } from '@angular/common';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
-export class LoginComponent {}
+export class LoginComponent {
+  constructor(private authService: AuthService, private router: Router) {}
+
+  loginAsClient() {
+    this.authService.login('Client1');
+    this.router.navigate(['/chat']);
+  }
+
+  loginAsSupport() {
+    this.authService.login('Support1');
+    this.router.navigate(['/chat']);
+  }
+}
