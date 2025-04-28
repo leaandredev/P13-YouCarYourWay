@@ -24,9 +24,12 @@ export class WebSocketComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.username = this.authService.getUsername();
+
     this.messageSubscription = this.webSocketService
       .getMessages()
       .subscribe((message: any) => {
+        console.log(message);
+
         this.messages.push(message);
       });
   }
@@ -42,6 +45,11 @@ export class WebSocketComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.webSocketService.sendMessage({
+      username: this.username,
+      text: 'a quitté la conversation',
+    });
+    this.messageText = '';
     this.messageSubscription.unsubscribe();
     this.webSocketService.closeConnection();
   }
