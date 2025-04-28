@@ -5,13 +5,10 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 /**
- * DTO with credentials to log user
+ * DTO with user ID (only for Chat POC)
  */
 @Data
 public class LoginRequest {
     @NotBlank
-    private String email;
-
-    @NotBlank
-    private String password;
+    private Long id;
 }
