@@ -8,7 +8,7 @@ export class WebSocketService {
   private socket$: WebSocketSubject<any>;
 
   constructor() {
-    this.socket$ = new WebSocketSubject('ws://localhost:8080/ws');
+    this.socket$ = new WebSocketSubject('ws://localhost:8080/ws/chat');
   }
 
   sendMessage(message: any) {
