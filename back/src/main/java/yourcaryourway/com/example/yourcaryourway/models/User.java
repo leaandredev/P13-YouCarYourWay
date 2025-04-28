@@ -13,6 +13,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "user")
 @Data
 @EntityListeners(AuditingEntityListener.class)

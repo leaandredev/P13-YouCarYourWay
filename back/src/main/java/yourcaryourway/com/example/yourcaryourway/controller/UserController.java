@@ -5,16 +5,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import yourcaryourway.com.example.yourcaryourway.models.User;
-import yourcaryourway.com.example.yourcaryourway.repository.UserRepository;
+import yourcaryourway.com.example.yourcaryourway.repository.ClientRepository;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
 
-    private final UserRepository userRepository;
+    private final ClientRepository userRepository;
 
-    UserController(UserRepository userRepository) {
+    UserController(ClientRepository userRepository) {
         this.userRepository = userRepository;
     }
 
