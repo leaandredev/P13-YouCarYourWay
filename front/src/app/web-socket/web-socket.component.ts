@@ -1,9 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { WebSocketService } from '../services/web-socket.service';
+import { WebSocketService } from '../core/services/web-socket.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AuthService } from '../services/auth.service';
+import { SessionService } from '../core/services/session.service';
 
 @Component({
   selector: 'app-web-socket',
@@ -14,22 +14,22 @@ import { AuthService } from '../services/auth.service';
 export class WebSocketComponent implements OnInit, OnDestroy {
   messages: any[] = [];
   messageText: string = '';
-  username: string = '';
+  firstName?: string = '';
+  lastName?: string = '';
   private messageSubscription!: Subscription;
 
   constructor(
     private webSocketService: WebSocketService,
-    private authService: AuthService
+    private sessionService: SessionService
   ) {}
 
   ngOnInit() {
-    this.username = this.authService.getUsername();
+    this.firstName = this.sessionService.sessionInformation?.firstName;
+    this.lastName = this.sessionService.sessionInformation?.lastName;
 
     this.messageSubscription = this.webSocketService
       .getMessages()
       .subscribe((message: any) => {
-        console.log(message);
-
         this.messages.push(message);
       });
   }
@@ -37,7 +37,7 @@ export class WebSocketComponent implements OnInit, OnDestroy {
   sendMessage() {
     if (this.messageText.trim() !== '') {
       this.webSocketService.sendMessage({
-        username: this.username,
+        id: this.sessionService.sessionInformation?.id,
         text: this.messageText,
       });
       this.messageText = '';
@@ -46,7 +46,7 @@ export class WebSocketComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.webSocketService.sendMessage({
-      username: this.username,
+      id: this.sessionService.sessionInformation?.id,
       text: 'a quitté la conversation',
     });
     this.messageText = '';
