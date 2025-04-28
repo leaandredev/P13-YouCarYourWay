@@ -2,18 +2,19 @@ package yourcaryourway.com.example.yourcaryourway.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import yourcaryourway.com.example.yourcaryourway.dto.LoginRequest;
 import yourcaryourway.com.example.yourcaryourway.dto.LoginResponse;
 import yourcaryourway.com.example.yourcaryourway.models.Client;
 import yourcaryourway.com.example.yourcaryourway.models.Support;
 import yourcaryourway.com.example.yourcaryourway.models.User;
 import yourcaryourway.com.example.yourcaryourway.services.UserService;
 
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -23,9 +24,13 @@ public class AuthController {
         this.userService = userService;
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
-        User user = userService.findById(request.getId());
+    @GetMapping("/login/{id}")
+    public ResponseEntity<LoginResponse> login(@PathVariable("id") String id) {
+        User user = userService.findById(Long.valueOf(id));
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
 
         String role;
         if (user instanceof Client) {
@@ -34,10 +39,6 @@ public class AuthController {
             role = "SUPPORT";
         } else {
             role = "UNKNOWN";
-        }
-
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         LoginResponse response = new LoginResponse(user.getId(), user.getEmail(), user.getFirstName(),

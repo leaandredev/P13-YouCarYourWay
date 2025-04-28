@@ -1,9 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { WebSocketService } from '../core/services/web-socket.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { SessionService } from '../core/services/session.service';
+import { WebSocketService } from '../../../core/services/web-socket.service';
+import { SessionService } from '../../../core/services/session.service';
 
 @Component({
   selector: 'app-web-socket',
@@ -16,6 +16,7 @@ export class WebSocketComponent implements OnInit, OnDestroy {
   messageText: string = '';
   firstName?: string = '';
   lastName?: string = '';
+  type?: string = 'UNKNOWN';
   private messageSubscription!: Subscription;
 
   constructor(
@@ -26,6 +27,7 @@ export class WebSocketComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.firstName = this.sessionService.sessionInformation?.firstName;
     this.lastName = this.sessionService.sessionInformation?.lastName;
+    this.type = this.sessionService.sessionInformation?.type;
 
     this.messageSubscription = this.webSocketService
       .getMessages()
@@ -38,6 +40,8 @@ export class WebSocketComponent implements OnInit, OnDestroy {
     if (this.messageText.trim() !== '') {
       this.webSocketService.sendMessage({
         id: this.sessionService.sessionInformation?.id,
+        firstName: this.sessionService.sessionInformation?.firstName,
+        lastName: this.sessionService.sessionInformation?.lastName,
         text: this.messageText,
       });
       this.messageText = '';
@@ -47,10 +51,13 @@ export class WebSocketComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.webSocketService.sendMessage({
       id: this.sessionService.sessionInformation?.id,
+      firstName: this.sessionService.sessionInformation?.firstName,
+      lastName: this.sessionService.sessionInformation?.lastName,
       text: 'a quitté la conversation',
     });
     this.messageText = '';
     this.messageSubscription.unsubscribe();
     this.webSocketService.closeConnection();
+    this.sessionService.logOut();
   }
 }

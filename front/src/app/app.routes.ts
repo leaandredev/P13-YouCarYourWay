@@ -1,9 +1,18 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './login/login.component';
-import { WebSocketComponent } from './web-socket/web-socket.component';
+import { authRoutes } from './features/auth/auth.routes';
+import { chatRoutes } from './features/chat/chat.routes';
+import { UnauthGuard } from './core/guards/unauth.guard';
+import { AuthGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
-  { path: 'login', component: LoginComponent },
-  { path: 'chat', component: WebSocketComponent },
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  {
+    path: '',
+    canActivate: [UnauthGuard],
+    children: authRoutes,
+  },
+  {
+    path: 'chat',
+    canActivate: [AuthGuard],
+    children: chatRoutes,
+  },
 ];

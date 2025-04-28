@@ -11,7 +11,4 @@ import jakarta.persistence.*;
 @AllArgsConstructor
 @ToString
 public class Client extends User {
-    private String adress1;
-    private String adress2;
-    private String postalCode;
 }
