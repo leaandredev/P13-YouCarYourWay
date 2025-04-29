@@ -1,4 +1,4 @@
-CREATE TABLE `LANGUAGE` (
+CREATE TABLE `language` (
   `id` INT PRIMARY KEY AUTO_INCREMENT,
   `code` VARCHAR(255) UNIQUE,
   `name` VARCHAR(255),
@@ -6,7 +6,7 @@ CREATE TABLE `LANGUAGE` (
   `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE `COUNTRY` (
+CREATE TABLE `country` (
   `id` INT PRIMARY KEY AUTO_INCREMENT,
   `code` VARCHAR(10) UNIQUE,
   `name` VARCHAR(255),
@@ -14,7 +14,7 @@ CREATE TABLE `COUNTRY` (
   `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE `USER` (
+CREATE TABLE `user` (
   `id` INT PRIMARY KEY AUTO_INCREMENT,
   `email` VARCHAR(255),
   `password` VARCHAR(255),
@@ -25,7 +25,7 @@ CREATE TABLE `USER` (
   `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE `CLIENT` (
+CREATE TABLE `client` (
   `id` INT PRIMARY KEY AUTO_INCREMENT,
   `birth_date` DATE,
   `address_1` VARCHAR(255),
@@ -35,18 +35,18 @@ CREATE TABLE `CLIENT` (
   `country_id` INT,
 );
 
-CREATE TABLE `SUPPORT` (
+CREATE TABLE `support` (
   `id` INT PRIMARY KEY AUTO_INCREMENT,
 );
 
-ALTER TABLE `CLIENT` ADD FOREIGN KEY (`id`) REFERENCES `USER`(`id`);
-ALTER TABLE `SUPPORT` ADD FOREIGN KEY (`id`) REFERENCES `USER`(`id`);
+ALTER TABLE `client` ADD FOREIGN KEY (`id`) REFERENCES `user`(`id`);
+ALTER TABLE `support` ADD FOREIGN KEY (`id`) REFERENCES `user`(`id`);
 
-ALTER TABLE `USER` ADD FOREIGN KEY (`country_id`) REFERENCES `COUNTRY`(`id`);
+ALTER TABLE `user` ADD FOREIGN KEY (`country_id`) REFERENCES `country`(`id`);
 
-ALTER TABLE `USER` ADD FOREIGN KEY (`language_id`) REFERENCES `LANGUAGE`(`id`);
+ALTER TABLE `user` ADD FOREIGN KEY (`language_id`) REFERENCES `language`(`id`);
 
-CREATE TABLE `REMEMBER_ME_TOKENS` (
+CREATE TABLE `remember_me_tokens` (
   `id` INT PRIMARY KEY AUTO_INCREMENT,
   `user_id` INT UNIQUE,
   `selector` VARCHAR(255),
@@ -55,9 +55,9 @@ CREATE TABLE `REMEMBER_ME_TOKENS` (
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 );
 
-ALTER TABLE `REMEMBER_ME_TOKENS` ADD FOREIGN KEY (`user_id`) REFERENCES `USER`(`id`);
+ALTER TABLE `remember_me_tokens` ADD FOREIGN KEY (`user_id`) REFERENCES `user`(`id`);
 
-CREATE TABLE `CURRENCY` (
+CREATE TABLE `currency` (
   `id` INT PRIMARY KEY AUTO_INCREMENT,
   `code` VARCHAR(255) UNIQUE,
   `symbol` VARCHAR(255),
@@ -65,7 +65,7 @@ CREATE TABLE `CURRENCY` (
   `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE `RENTAL_AGENCY` (
+CREATE TABLE `rental_agency` (
   `id` INT PRIMARY KEY AUTO_INCREMENT,
   `name` VARCHAR(255),
   `address_1` VARCHAR(255),
@@ -78,9 +78,9 @@ CREATE TABLE `RENTAL_AGENCY` (
   `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
-ALTER TABLE `RENTAL_AGENCY` ADD FOREIGN KEY (`country_id`) REFERENCES `COUNTRY`(`id`);
+ALTER TABLE `rental_agency` ADD FOREIGN KEY (`country_id`) REFERENCES `country`(`id`);
 
-CREATE TABLE `VEHICULE_CATEGORY` (
+CREATE TABLE `vehicule_category` (
   `id` INT PRIMARY KEY AUTO_INCREMENT,
   `language_id` INT,
   `acriss_code` VARCHAR(10),
@@ -89,9 +89,9 @@ CREATE TABLE `VEHICULE_CATEGORY` (
   `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
-ALTER TABLE `VEHICULE_CATEGORY` ADD FOREIGN KEY (`language_id`) REFERENCES `LANGUAGE`(`id`);
+ALTER TABLE `vehicule_category` ADD FOREIGN KEY (`language_id`) REFERENCES `language`(`id`);
 
-CREATE TABLE `RENTAL_OFFER` (
+CREATE TABLE `rental_offer` (
   `id` INT PRIMARY KEY AUTO_INCREMENT,
   `rental_agency_id` INT,
   `vehicle_vategory_id` INT,
@@ -105,11 +105,11 @@ CREATE TABLE `RENTAL_OFFER` (
   `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
-ALTER TABLE `RENTAL_OFFER` ADD FOREIGN KEY (`rental_agency_id`) REFERENCES `RENTAL_AGENCY`(`id`);
-ALTER TABLE `RENTAL_OFFER` ADD FOREIGN KEY (`vehicle_vategory_id`) REFERENCES `VEHICULE_CATEGORY`(`id`);
-ALTER TABLE `RENTAL_OFFER` ADD FOREIGN KEY (`currency_id`) REFERENCES `CURRENCY`(`id`);
+ALTER TABLE `rental_offer` ADD FOREIGN KEY (`rental_agency_id`) REFERENCES `rental_agency`(`id`);
+ALTER TABLE `rental_offer` ADD FOREIGN KEY (`vehicle_vategory_id`) REFERENCES `vehicule_category`(`id`);
+ALTER TABLE `rental_offer` ADD FOREIGN KEY (`currency_id`) REFERENCES `currency`(`id`);
 
-CREATE TABLE `RENTAL_BOOKING` (
+CREATE TABLE `rental_booking` (
   `id` INT PRIMARY KEY AUTO_INCREMENT,
   `client_id` INT,
   `rental_offer_id` INT,
@@ -124,10 +124,10 @@ CREATE TABLE `RENTAL_BOOKING` (
   `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
-ALTER TABLE `RENTAL_BOOKING` ADD FOREIGN KEY (`rental_offer_id`) REFERENCES `RENTAL_OFFER`(`id`);
-ALTER TABLE `RENTAL_BOOKING` ADD FOREIGN KEY (`client_id`) REFERENCES `CLIENT`(`id`);
+ALTER TABLE `rental_booking` ADD FOREIGN KEY (`rental_offer_id`) REFERENCES `rental_offer`(`id`);
+ALTER TABLE `rental_booking` ADD FOREIGN KEY (`client_id`) REFERENCES `client`(`id`);
 
-CREATE TABLE `CHAT_SESSION`( (
+CREATE TABLE `chat_session`( (
   `id` INT PRIMARY KEY AUTO_INCREMENT,
   `client_id` INT,
   `support_id` INT,
@@ -136,10 +136,10 @@ CREATE TABLE `CHAT_SESSION`( (
   `closed_at` TIMESTAMP DEFAULT NULL,
 );
 
-ALTER TABLE `CHAT_SESSION` ADD FOREIGN KEY (`client_id`) REFERENCES `CLIENT`(`id`);
-ALTER TABLE `CHAT_SESSION` ADD FOREIGN KEY (`support_id`) REFERENCES `SUPPORT`(`id`);
+ALTER TABLE `chat_session` ADD FOREIGN KEY (`client_id`) REFERENCES `client`(`id`);
+ALTER TABLE `chat_session` ADD FOREIGN KEY (`support_id`) REFERENCES `support`(`id`);
 
-CREATE TABLE `CHAT_MESSAGE` (
+CREATE TABLE `chat_message` (
   `id` INT PRIMARY KEY AUTO_INCREMENT,
   `chat_session_id` INT,
   `sender_id` INT,
@@ -147,5 +147,5 @@ CREATE TABLE `CHAT_MESSAGE` (
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-ALTER TABLE `CHAT_MESSAGE` ADD FOREIGN KEY (`chat_session_id`) REFERENCES `CHAT_SESSION`(`id`);
-ALTER TABLE `CHAT_MESSAGE` ADD FOREIGN KEY (`sender_id`) REFERENCES `USER`(`id`);
+ALTER TABLE `chat_message` ADD FOREIGN KEY (`chat_session_id`) REFERENCES `chat_session`(`id`);
+ALTER TABLE `chat_message` ADD FOREIGN KEY (`sender_id`) REFERENCES `user`(`id`);
