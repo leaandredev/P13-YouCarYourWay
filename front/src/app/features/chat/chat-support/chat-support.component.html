@@ -1,0 +1,13 @@
+<div class="chat-support-container">
+    <div class="chat-sessions-list">
+        <ul>
+            <li *ngFor="let session of chatSessions" (click)="selectSession(session)">
+                {{ session.clientFirstName }} {{ session.clientLastName }}
+            </li>
+        </ul>
+    </div>
+
+    <div class="chat-session-view">
+        <app-chat-interface *ngIf="selectedSession" [session]="selectedSession"></app-chat-interface>
+    </div>
+</div>

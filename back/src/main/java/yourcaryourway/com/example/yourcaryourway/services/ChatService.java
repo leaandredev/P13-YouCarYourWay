@@ -48,7 +48,7 @@ public class ChatService {
     }
 
     public List<ChatSession> getOpenSessions() {
-        return this.chatSessionRepository.findByClosedAtIsNotNull();
+        return this.chatSessionRepository.findByClosedAtIsNull();
     }
 
     public List<ChatMessage> getMessagesForSession(ChatSession session) {
