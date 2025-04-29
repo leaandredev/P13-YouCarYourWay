@@ -31,6 +31,12 @@ public class ChatMessage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /** User who send the message */
+    @NonNull
+    @ManyToOne
+    @JoinColumn(name = "sender_id", nullable = false)
+    private User sender;
+
     /** Chat session id */
     @NonNull
     @ManyToOne

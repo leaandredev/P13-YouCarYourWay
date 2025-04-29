@@ -26,7 +26,7 @@ public class AuthController {
 
     @GetMapping("/login/{id}")
     public ResponseEntity<LoginResponse> login(@PathVariable("id") String id) {
-        User user = userService.findById(Long.valueOf(id));
+        User user = this.userService.findUserById(Long.valueOf(id));
 
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
