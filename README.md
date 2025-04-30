@@ -37,6 +37,14 @@ For more details, including installation instructions and resources, please refe
 - [Front-end README](front/README.md)
 - [Back-end README](back/README.md)
 
+## Ressources
+
+### MySQL
+
+SQL script for creating the schema is available in the backend `back/src/main/resources/data.sql`
+
+You will find installation procedure in back-end README.
+
 ## Authors
 
 - Lea ANDRE
