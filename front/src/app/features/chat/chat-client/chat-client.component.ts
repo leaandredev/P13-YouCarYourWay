@@ -4,6 +4,7 @@ import { SessionService } from '../../../core/services/session.service';
 import { ChatInterfaceComponent } from '../components/chat-interface/chat-interface.component';
 import { ChatService } from '../../../core/services/chat.service';
 import { ChatSession } from '../../../core/interfaces/chat-session.interface';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-chat-client',
@@ -16,7 +17,8 @@ export class ChatClientComponent implements OnInit, OnDestroy {
 
   constructor(
     private chatService: ChatService,
-    private sessionService: SessionService
+    private sessionService: SessionService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -33,9 +35,20 @@ export class ChatClientComponent implements OnInit, OnDestroy {
       });
   }
 
+  public logout(): void {
+    this.ngOnDestroy();
+    this.router.navigate(['/login']);
+  }
+
   ngOnDestroy() {
+    this.chatService.closeSession(String(this.session.id)).subscribe({
+      next: () => {
+        console.log('Session fermée avec succès.');
+      },
+      error: (err) => {
+        console.error('Erreur lors de la fermeture de la session :', err);
+      },
+    });
     this.sessionService.logOut();
-    this.chatService.closeSession(String(this.session.id));
-    console.log('Session cloturée :', this.session);
   }
 }

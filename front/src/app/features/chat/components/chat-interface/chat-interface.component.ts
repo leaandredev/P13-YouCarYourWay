@@ -1,4 +1,11 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  SimpleChanges,
+} from '@angular/core';
 import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -14,10 +21,10 @@ import { Message } from '../../../../core/interfaces/message.interface';
   templateUrl: './chat-interface.component.html',
   styleUrl: './chat-interface.component.scss',
 })
-export class ChatInterfaceComponent implements OnInit, OnDestroy {
+export class ChatInterfaceComponent implements OnInit, OnDestroy, OnChanges {
   @Input() session!: ChatSession;
 
-  messages: any[] = [];
+  messages: Message[] = [];
   messageText: string = '';
   firstName?: string = '';
   lastName?: string = '';
@@ -35,12 +42,19 @@ export class ChatInterfaceComponent implements OnInit, OnDestroy {
     this.lastName = this.sessionService.sessionInformation?.lastName;
     this.type = this.sessionService.sessionInformation?.type;
 
+    this.listenToWebSocket();
+  }
+
+  private loadMessages() {
     this.chatService
       .getMessages(String(this.session.id))
       .subscribe((messages: Message[]) => {
+        console.log(messages);
         this.messages = messages;
       });
+  }
 
+  private listenToWebSocket() {
     this.messageSubscription = this.webSocketService
       .getMessages()
       .subscribe((message: any) => {
@@ -48,33 +62,49 @@ export class ChatInterfaceComponent implements OnInit, OnDestroy {
       });
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['session'] && changes['session'].currentValue) {
+      this.loadMessages();
+    }
+  }
+
   sendMessage() {
     if (this.messageText.trim() !== '') {
-      this.webSocketService.sendMessage({
-        id: this.sessionService.sessionInformation?.id,
-        firstName: this.sessionService.sessionInformation?.firstName,
-        lastName: this.sessionService.sessionInformation?.lastName,
-        text: this.messageText,
-      });
-      this.chatService.sendMessage({
-        sessionId: this.session.id,
-        senderId: this.sessionService.sessionInformation?.id,
-        content: this.messageText,
-      });
-      this.messageText = '';
+      this.sendToAPI(this.messageText);
     }
   }
 
   ngOnDestroy() {
-    this.webSocketService.sendMessage({
-      id: this.sessionService.sessionInformation?.id,
-      firstName: this.sessionService.sessionInformation?.firstName,
-      lastName: this.sessionService.sessionInformation?.lastName,
-      text: 'a quitté la conversation',
-    });
+    this.sendToAPI('a quitté la conversation');
     this.messageText = '';
     this.messageSubscription.unsubscribe();
     this.webSocketService.closeConnection();
     this.sessionService.logOut();
+  }
+
+  private sendToAPI(content: string) {
+    this.webSocketService.sendMessage({
+      id: this.sessionService.sessionInformation?.id,
+      sessionId: this.session.id,
+      senderLastName: this.sessionService.sessionInformation?.lastName,
+      senderFirstName: this.sessionService.sessionInformation?.firstName,
+      content: content,
+    });
+    this.chatService
+      .sendMessage({
+        sessionId: this.session.id,
+        senderId: this.sessionService.sessionInformation?.id,
+        content: content,
+      })
+      .subscribe({
+        next: () => {
+          console.log("Message envoyé sur l'API ");
+        },
+        error: (err) => {
+          console.error("Erreur lors de l'envoi du message :", err);
+        },
+      });
+
+    this.messageText = '';
   }
 }

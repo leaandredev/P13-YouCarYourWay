@@ -14,6 +14,7 @@ export class ChatService {
   constructor(private httpClient: HttpClient) {}
 
   public createSession(clientId: string): Observable<ChatSession> {
+    console.log('create new session : ', clientId);
     return this.httpClient.post<ChatSession>(
       `${this.pathService}/session/${clientId}`,
       null
@@ -30,18 +31,21 @@ export class ChatService {
   }
 
   public getOpenSessions(): Observable<ChatSession[]> {
+    console.log('get open sessions');
     return this.httpClient.get<ChatSession[]>(
       `${this.pathService}/sessions/open`
     );
   }
 
   public getMessages(sessionId: string): Observable<Message[]> {
+    console.log('get messages from session : ', sessionId);
     return this.httpClient.get<Message[]>(
       `${this.pathService}/messages/${sessionId}`
     );
   }
 
   public closeSession(sessionId: string): Observable<void> {
+    console.log('Close session : ', sessionId);
     return this.httpClient.patch<void>(
       `${this.pathService}/session/${sessionId}/close`,
       null

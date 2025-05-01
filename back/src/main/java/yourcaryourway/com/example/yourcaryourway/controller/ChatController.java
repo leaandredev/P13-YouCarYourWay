@@ -41,6 +41,7 @@ public class ChatController {
 
     @PostMapping("/session/{clientId}")
     public ResponseEntity<SessionResponse> createSession(@PathVariable Long clientId) {
+        System.out.println("Nouvelle session créer via API : " + clientId);
         Client client = this.userService.findClientById(clientId);
         ChatSession session = this.chatService.createSession(client);
 
@@ -74,6 +75,7 @@ public class ChatController {
 
     @GetMapping("/sessions/open")
     public ResponseEntity<List<SessionResponse>> getOpenSessions() {
+        System.out.println("Get open Sessions");
         List<ChatSession> openSessions = this.chatService.getOpenSessions();
         List<SessionResponse> sessionDTOs = openSessions.stream()
                 .map(session -> {
@@ -91,6 +93,7 @@ public class ChatController {
 
     @GetMapping("/messages/{sessionId}")
     public ResponseEntity<List<MessageResponse>> getMessages(@PathVariable Long sessionId) {
+        System.out.println("Get messages for session " + sessionId);
         ChatSession session = this.chatService.getSessionById(sessionId);
         List<ChatMessage> messages = this.chatService.getMessagesForSession(session);
         List<MessageResponse> messageDTOs = messages.stream()
@@ -98,6 +101,7 @@ public class ChatController {
                     MessageResponse dto = new MessageResponse();
                     dto.setId(message.getId());
                     dto.setContent(message.getContent());
+                    dto.setSessionId(sessionId);
                     dto.setSenderFirstName(message.getSender().getFirstName());
                     dto.setSenderLastName(message.getSender().getLastName());
                     dto.setCreatedAt(message.getCreatedAt());
@@ -110,6 +114,7 @@ public class ChatController {
 
     @PatchMapping("/session/{sessionId}/close")
     public ResponseEntity<Void> closeSession(@PathVariable Long sessionId) {
+        System.out.println("Close session " + sessionId);
         ChatSession session = this.chatService.getSessionById(sessionId);
         this.chatService.closeSession(session);
         return ResponseEntity.ok().build();

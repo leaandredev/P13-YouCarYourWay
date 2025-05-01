@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { ChatService } from '../../../core/services/chat.service';
 import { ChatSession } from '../../../core/interfaces/chat-session.interface';
 import { SessionService } from '../../../core/services/session.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-chat-support',
@@ -18,7 +19,8 @@ export class ChatSupportComponent implements OnInit, OnDestroy {
 
   constructor(
     private chatService: ChatService,
-    private sessionService: SessionService
+    private sessionService: SessionService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -27,8 +29,14 @@ export class ChatSupportComponent implements OnInit, OnDestroy {
     });
   }
 
+  public logout(): void {
+    this.ngOnDestroy();
+    this.router.navigate(['/login']);
+  }
+
   selectSession(session: ChatSession) {
     this.selectedSession = session;
+    console.log('Selected session', session);
   }
 
   ngOnDestroy() {

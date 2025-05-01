@@ -1,5 +1,7 @@
 <div class="chat-support-container">
     <div class="chat-sessions-list">
+        <ul><button class="logout-button" (click)="logout()">Déconnexion</button>
+        </ul>
         <ul>
             <li *ngFor="let session of chatSessions" (click)="selectSession(session)">
                 {{ session.clientFirstName }} {{ session.clientLastName }}

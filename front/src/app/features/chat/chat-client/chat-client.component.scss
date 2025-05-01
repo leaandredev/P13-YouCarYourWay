@@ -5,3 +5,19 @@
     align-items: center;
     background-color: #f4f6f8;
 }
+
+.logout-button {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin: 1rem;
+
+    &:hover {
+        background-color: #cc0000;
+    }
+}
