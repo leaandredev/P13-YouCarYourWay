@@ -4,15 +4,6 @@ This is YourCarYourWay App, used to handle rental car.
 
 Actually, the project only contain a POC for the chat feature.
 
-## Features
-
-- Register and log users to connect to the application
-- Handle posts:
-  - Feed with all posts user is registered for
-  - Create and display post details
-- Handle topics to subscribe
-- Handle user profile
-
 ## Installation
 
 After the repository has been imported (see README in the front part of the project), go in back directory and install depencies with maven :
@@ -24,12 +15,12 @@ mvn install
 ### Create the Mdd Database
 
 1. **Set Up the Database**  
-   Open a MySQL client in your terminal or use a tool like MySQL Workbench, and execute the following commands. Replace `mdd_db`, `your_user_name`, and `your_password` with your desired database name, username, and password:
+   Open a MySQL client in your terminal or use a tool like MySQL Workbench, and execute the following commands. Replace `mdd_yourcaryourway`, `your_user_name`, and `your_password` with your desired database name, username, and password:
 
    ```sql
-   CREATE DATABASE mdd_db;
+   CREATE DATABASE mdd_yourcaryourway;
    CREATE USER 'your_user_name'@'localhost' IDENTIFIED BY 'your_password';
-   GRANT ALL PRIVILEGES ON mdd_db.* TO 'your_user_name'@'localhost';
+   GRANT ALL PRIVILEGES ON mdd_yourcaryourway.* TO 'your_user_name'@'localhost';
    FLUSH PRIVILEGES;
    ```
 
@@ -53,7 +44,7 @@ mvn install
      Add the following lines to your `~/.bashrc` (or `~/.zshrc` for macOS with zsh) file:
 
      ```bash
-     export MYSQL_DATABASE_URL=jdbc:mysql://localhost:3306/mdd_db
+     export MYSQL_DATABASE_URL=jdbc:mysql://localhost:3306/mdd_yourcaryourway
      export MYSQL_DATABASE_USERNAME=your_user_name
      export MYSQL_DATABASE_PASSWORD=your_password
      ```
@@ -68,7 +59,7 @@ mvn install
      Set the environment variables temporarily for the current session:
 
      ```cmd
-     set MYSQL_DATABASE_URL=jdbc:mysql://localhost:3306/mdd_db
+     set MYSQL_DATABASE_URL=jdbc:mysql://localhost:3306/mdd_yourcaryourway
      set MYSQL_DATABASE_USERNAME=your_user_name
      set MYSQL_DATABASE_PASSWORD=your_password
      ```
@@ -78,7 +69,7 @@ mvn install
    - **On Windows (PowerShell):**  
      Use the following commands to set variables for the current session:
      ```powershell
-     $env:MYSQL_DATABASE_URL="jdbc:mysql://localhost:3306/mdd_db"
+     $env:MYSQL_DATABASE_URL="jdbc:mysql://localhost:3306/mdd_yourcaryourway"
      $env:MYSQL_DATABASE_USERNAME="your_user_name"
      $env:MYSQL_DATABASE_PASSWORD="your_password"
      ```
