@@ -2,6 +2,7 @@ package yourcaryourway.com.example.yourcaryourway.controller;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -14,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import yourcaryourway.com.example.yourcaryourway.dto.SendMessageRequest;
+import yourcaryourway.com.example.yourcaryourway.dto.SessionResponse;
 import yourcaryourway.com.example.yourcaryourway.dto.CreateSessionRequest;
+import yourcaryourway.com.example.yourcaryourway.dto.MessageResponse;
 import yourcaryourway.com.example.yourcaryourway.models.ChatMessage;
 import yourcaryourway.com.example.yourcaryourway.models.ChatSession;
 import yourcaryourway.com.example.yourcaryourway.models.Client;
@@ -36,15 +39,24 @@ public class ChatController {
         this.userService = userService;
     }
 
-    @PostMapping("/session")
-    public ResponseEntity<ChatSession> createSession(@RequestBody CreateSessionRequest request) {
-        Client client = this.userService.findClientById(request.getClientId());
+    @PostMapping("/session/{clientId}")
+    public ResponseEntity<SessionResponse> createSession(@PathVariable Long clientId) {
+        System.out.println("Nouvelle session créer via API : " + clientId);
+        Client client = this.userService.findClientById(clientId);
         ChatSession session = this.chatService.createSession(client);
-        return ResponseEntity.ok(session);
+
+        SessionResponse response = new SessionResponse();
+        response.setId(session.getId());
+        response.setClientFirstName(client.getFirstName());
+        response.setClientLastName(client.getLastName());
+        response.setCreatedAt(session.getCreatedAt());
+
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/message")
     public ResponseEntity<Void> sendMessage(@RequestBody SendMessageRequest request) {
+        System.out.println("Message reçu API : " + request.getContent());
         ChatSession session = this.chatService.getSessionById(request.getSessionId());
         User sender = this.userService.findUserById(request.getSenderId());
         ChatMessage message = ChatMessage.builder()
@@ -62,20 +74,47 @@ public class ChatController {
     }
 
     @GetMapping("/sessions/open")
-    public ResponseEntity<List<ChatSession>> getOpenSessions() {
+    public ResponseEntity<List<SessionResponse>> getOpenSessions() {
+        System.out.println("Get open Sessions");
         List<ChatSession> openSessions = this.chatService.getOpenSessions();
-        return ResponseEntity.ok(openSessions);
+        List<SessionResponse> sessionDTOs = openSessions.stream()
+                .map(session -> {
+                    SessionResponse dto = new SessionResponse();
+                    dto.setId(session.getId());
+                    dto.setClientFirstName(session.getClient().getFirstName());
+                    dto.setClientLastName(session.getClient().getLastName());
+                    dto.setCreatedAt(session.getCreatedAt());
+                    dto.setClosedAt(session.getClosedAt());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(sessionDTOs);
     }
 
     @GetMapping("/messages/{sessionId}")
-    public ResponseEntity<List<ChatMessage>> getMessages(@PathVariable Long sessionId) {
+    public ResponseEntity<List<MessageResponse>> getMessages(@PathVariable Long sessionId) {
+        System.out.println("Get messages for session " + sessionId);
         ChatSession session = this.chatService.getSessionById(sessionId);
         List<ChatMessage> messages = this.chatService.getMessagesForSession(session);
-        return ResponseEntity.ok(messages);
+        List<MessageResponse> messageDTOs = messages.stream()
+                .map(message -> {
+                    MessageResponse dto = new MessageResponse();
+                    dto.setId(message.getId());
+                    dto.setContent(message.getContent());
+                    dto.setSessionId(sessionId);
+                    dto.setSenderFirstName(message.getSender().getFirstName());
+                    dto.setSenderLastName(message.getSender().getLastName());
+                    dto.setCreatedAt(message.getCreatedAt());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(messageDTOs);
     }
 
     @PatchMapping("/session/{sessionId}/close")
     public ResponseEntity<Void> closeSession(@PathVariable Long sessionId) {
+        System.out.println("Close session " + sessionId);
         ChatSession session = this.chatService.getSessionById(sessionId);
         this.chatService.closeSession(session);
         return ResponseEntity.ok().build();

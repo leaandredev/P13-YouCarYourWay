@@ -1,9 +1,14 @@
 import { Routes } from '@angular/router';
-import { WebSocketComponent } from './web-socket/web-socket.component';
+import { ChatClientComponent } from './chat-client/chat-client.component';
+import { ChatSupportComponent } from './chat-support/chat-support.component';
 
 export const chatRoutes: Routes = [
   {
-    path: '',
-    component: WebSocketComponent,
+    path: 'chat-client',
+    component: ChatClientComponent,
+  },
+  {
+    path: 'chat-support',
+    component: ChatSupportComponent,
   },
 ];

@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { WebSocketComponent } from './web-socket.component';
+import { ChatInterfaceComponent } from './chat-interface.component';
 
-describe('WebSocketComponent', () => {
-  let component: WebSocketComponent;
-  let fixture: ComponentFixture<WebSocketComponent>;
+describe('ChatInterfaceComponent', () => {
+  let component: ChatInterfaceComponent;
+  let fixture: ComponentFixture<ChatInterfaceComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [WebSocketComponent]
+      imports: [ChatInterfaceComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(WebSocketComponent);
+    fixture = TestBed.createComponent(ChatInterfaceComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
