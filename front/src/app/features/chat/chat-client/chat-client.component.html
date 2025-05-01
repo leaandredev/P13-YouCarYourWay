@@ -1,0 +1,5 @@
+<button class="logout-button" (click)="logout()">Déconnexion</button>
+
+<div *ngIf="session">
+    <app-chat-interface [session]="session"></app-chat-interface>
+</div>

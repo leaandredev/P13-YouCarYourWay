@@ -23,7 +23,7 @@ export class LoginComponent {
     this.authService.login('1').subscribe({
       next: (response: SessionInformation) => {
         this.sessionService.logIn(response);
-        this.router.navigate(['/chat']);
+        this.router.navigate(['/chat/chat-client']);
       },
     });
   }
@@ -32,7 +32,7 @@ export class LoginComponent {
     this.authService.login('2').subscribe({
       next: (response: SessionInformation) => {
         this.sessionService.logIn(response);
-        this.router.navigate(['/chat']);
+        this.router.navigate(['/chat/chat-support']);
       },
     });
   }
