@@ -6,6 +6,7 @@ import { ChatService } from '../../../core/services/chat.service';
 import { ChatSession } from '../../../core/interfaces/chat-session.interface';
 import { SessionService } from '../../../core/services/session.service';
 import { Router } from '@angular/router';
+import { WebSocketService } from '../../../core/services/web-socket.service';
 
 @Component({
   selector: 'app-chat-support',
@@ -19,13 +20,20 @@ export class ChatSupportComponent implements OnInit, OnDestroy {
 
   constructor(
     private chatService: ChatService,
+    private webSocketService: WebSocketService,
     private sessionService: SessionService,
     private router: Router
   ) {}
 
   ngOnInit() {
+    this.webSocketService.connect();
+
     this.chatService.getOpenSessions().subscribe((sessions) => {
       this.chatSessions = sessions;
+    });
+
+    this.webSocketService.getSessions().subscribe((newSession) => {
+      this.chatSessions.push(newSession);
     });
   }
 

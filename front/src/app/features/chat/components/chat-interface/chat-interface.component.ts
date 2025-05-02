@@ -38,6 +38,8 @@ export class ChatInterfaceComponent implements OnInit, OnDestroy, OnChanges {
   ) {}
 
   ngOnInit() {
+    this.webSocketService.connect(this.session.id);
+
     this.firstName = this.sessionService.sessionInformation?.firstName;
     this.lastName = this.sessionService.sessionInformation?.lastName;
     this.type = this.sessionService.sessionInformation?.type;
@@ -69,41 +71,32 @@ export class ChatInterfaceComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   sendMessage() {
-    if (this.messageText.trim() !== '') {
-      this.sendToAPI(this.messageText);
-    }
+    this.sendToAPI(this.messageText);
   }
 
   ngOnDestroy() {
     this.sendToAPI('a quitté la conversation');
-    this.messageText = '';
     this.messageSubscription.unsubscribe();
-    this.webSocketService.closeConnection();
+    this.webSocketService.disconnect();
     this.sessionService.logOut();
   }
 
   private sendToAPI(content: string) {
-    this.webSocketService.sendMessage({
-      id: this.sessionService.sessionInformation?.id,
-      sessionId: this.session.id,
-      senderLastName: this.sessionService.sessionInformation?.lastName,
-      senderFirstName: this.sessionService.sessionInformation?.firstName,
-      content: content,
-    });
-    this.chatService
-      .sendMessage({
-        sessionId: this.session.id,
+    if (
+      this.messageText.trim() !== '' &&
+      this.session.id &&
+      this.sessionService.sessionInformation
+    ) {
+      console.log('sendToWebSocket');
+
+      this.webSocketService.sendMessage(this.session.id, {
         senderId: this.sessionService.sessionInformation?.id,
+        sessionId: this.session.id,
+        senderLastName: this.sessionService.sessionInformation?.lastName,
+        senderFirstName: this.sessionService.sessionInformation?.firstName,
         content: content,
-      })
-      .subscribe({
-        next: () => {
-          console.log("Message envoyé sur l'API ");
-        },
-        error: (err) => {
-          console.error("Erreur lors de l'envoi du message :", err);
-        },
       });
+    }
 
     this.messageText = '';
   }

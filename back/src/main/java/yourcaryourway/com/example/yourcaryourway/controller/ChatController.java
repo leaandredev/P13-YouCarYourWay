@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import yourcaryourway.com.example.yourcaryourway.dto.SendMessageRequest;
 import yourcaryourway.com.example.yourcaryourway.dto.SessionResponse;
-import yourcaryourway.com.example.yourcaryourway.dto.CreateSessionRequest;
 import yourcaryourway.com.example.yourcaryourway.dto.MessageResponse;
 import yourcaryourway.com.example.yourcaryourway.models.ChatMessage;
 import yourcaryourway.com.example.yourcaryourway.models.ChatSession;
@@ -26,17 +27,18 @@ import yourcaryourway.com.example.yourcaryourway.models.User;
 import yourcaryourway.com.example.yourcaryourway.services.ChatService;
 import yourcaryourway.com.example.yourcaryourway.services.UserService;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/chat")
 public class ChatController {
 
     private final ChatService chatService;
     private final UserService userService;
+    private final SimpMessagingTemplate messagingTemplate;
 
-    public ChatController(ChatService chatService, UserService userService) {
+    public ChatController(ChatService chatService, UserService userService, SimpMessagingTemplate messagingTemplate) {
         this.chatService = chatService;
         this.userService = userService;
+        this.messagingTemplate = messagingTemplate;
     }
 
     @PostMapping("/session/{clientId}")
@@ -51,26 +53,42 @@ public class ChatController {
         response.setClientLastName(client.getLastName());
         response.setCreatedAt(session.getCreatedAt());
 
+        this.messagingTemplate.convertAndSend("/topic/sessions", response);
+
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/message")
-    public ResponseEntity<Void> sendMessage(@RequestBody SendMessageRequest request) {
-        System.out.println("Message reçu API : " + request.getContent());
+    @MessageMapping("/message/{sessionId}")
+    public void sendMessage(@DestinationVariable String sessionId,
+            SendMessageRequest request) {
+        System.out.println("Message reçu via websocket : " + request.getContent());
         ChatSession session = this.chatService.getSessionById(request.getSessionId());
         User sender = this.userService.findUserById(request.getSenderId());
+
         ChatMessage message = ChatMessage.builder()
                 .sender(sender)
                 .chatSession(session)
                 .content(request.getContent())
                 .createdAt(LocalDateTime.now())
                 .build();
+
         if (session.getSupport() == null && sender instanceof Support) {
             session.setSupport((Support) sender);
             this.chatService.saveSession(session);
         }
+
         this.chatService.saveMessage(message);
-        return ResponseEntity.ok().build();
+
+        MessageResponse messageResponse = new MessageResponse();
+        messageResponse.setId(message.getId());
+        messageResponse.setSenderFirstName(sender.getFirstName());
+        messageResponse.setSenderLastName(sender.getLastName());
+        messageResponse.setContent(message.getContent());
+        messageResponse.setCreatedAt(message.getCreatedAt());
+
+        this.messagingTemplate.convertAndSend(
+                "/topic/chat/" + sessionId,
+                messageResponse);
     }
 
     @GetMapping("/sessions/open")

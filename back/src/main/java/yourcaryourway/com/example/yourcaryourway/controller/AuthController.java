@@ -14,7 +14,6 @@ import yourcaryourway.com.example.yourcaryourway.models.Support;
 import yourcaryourway.com.example.yourcaryourway.models.User;
 import yourcaryourway.com.example.yourcaryourway.services.UserService;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
